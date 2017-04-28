@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#FIXME necessary?
-#file=$(echo $1 | sed s~$AXIS_TOP_DIR~$NB_BUILD_DIR~g)
 file=$1
 line=$2
 search_string=$(echo "$3" | sed -e 's/</\\</g' -e 's/>/\\>/g')
@@ -9,17 +7,18 @@ search_string=$(echo "$3" | sed -e 's/</\\</g' -e 's/>/\\>/g')
 session=0
 # Fix for "Press any key"
 tmux send-keys Enter
-for row in `tmux list-panes -F '#{session_name}:#{window_index},#{pane_active}'`;
+for row in `tmux list-panes -F '#{session_name};#{window_index};#{pane_active};#{pane_pid}'`;
 do
-  active=$(echo $row | sed 's/.*,//')
-  pane=$(echo $row | sed "s/\(.*\),.*/\1.$session/")
+  args=(${row//;/ })
+  echo $args
+  active=${args[2]}
+  pane="${args[1]}.$session"
+  has_vim=`ps --ppid ${args[3]} | grep -c vim`
 
-  # choose first inactive pane
-  #FIXME toggle between panes better?
-  # not just first inactive chosen, OK if only two..
-  if [ $active == '0' ]; then
-    #FIXME verify that vim is running - get pane pid, and use pstree?
-    #FIXME if not vim, only shell, start vim?
+  # choose first inactive pane running vim
+  # FIXME if no pane has vim, start it?
+  # FIXME if multiple panes running vim, toggle better where to open file?
+  if [ $active == '0' ] && [ $has_vim == '1' ]; then
     tmux send-keys -t $pane Escape
     tmux send-keys -t $pane :tabnew Space $file Enter
     tmux send-keys -t $pane /"$search_string" Enter
