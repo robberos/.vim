@@ -9,7 +9,7 @@ search_string=$(echo "$3" | sed -e 's/</\\</g' -e 's/>/\\>/g')
 session=0
 # Fix for "Press any key"
 tmux send-keys Enter
-for row in `tmux list-panes -F '#{session_name}:#{window_name},#{pane_active}'`;
+for row in `tmux list-panes -F '#{session_name}:#{window_index},#{pane_active}'`;
 do
   active=$(echo $row | sed 's/.*,//')
   pane=$(echo $row | sed "s/\(.*\),.*/\1.$session/")
@@ -23,7 +23,7 @@ do
     tmux send-keys -t $pane Escape
     tmux send-keys -t $pane :tabnew Space $file Enter
     tmux send-keys -t $pane /"$search_string" Enter
-    tmux send-keys -t $pane :$line_number Enter zz
+    tmux send-keys -t $pane :$line Enter zz
     tmux select-pane -t $pane
     break
   fi
