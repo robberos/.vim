@@ -121,7 +121,7 @@ noremap gh :GitGutterNextHunk<CR>
 noremap gH :GitGutterPrevHunk<CR>
 
 " Show trailing whitespace and spaces before a tab:
-highlight ExtraWhitespace ctermbg=88 guibg=88
+highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$\| \+\ze\t/
 autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$\| \+\ze\t/
