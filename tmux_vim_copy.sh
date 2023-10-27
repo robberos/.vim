@@ -9,24 +9,24 @@ session=0
 tmux send-keys Enter
 for args in `tmux list-panes -F '#{window_index};#{pane_active};#{pane_pid}'`;
 do
-  set -f; IFS=';'
-  set -- $args
-  active=$2
-  pane="$1.$session"
-  has_vim=`ps --ppid $3 | grep -c vim`
+	set -f; IFS=';'
+	set -- $args
+	active=$2
+	pane="$1.$session"
+	has_vim=`ps --ppid $3 | grep -c vim`
 
-  # choose first inactive pane running vim
-  # FIXME if no pane has vim, start it?
-  # FIXME if multiple panes running vim, toggle better where to open file?
-  if [ "$active" = "0" ] && [ "$has_vim" = "1" ]; then
-    tmux send-keys -t $pane Escape
-    tmux send-keys -t $pane :tabnew Space $file Enter
-    tmux send-keys -t $pane /"$search_string" Enter
-    tmux send-keys -t $pane :$line Enter zz
-    tmux select-pane -t $pane
-    break
-  fi
+	# choose first inactive pane running vim
+	# FIXME if no pane has vim, start it?
+	# FIXME if multiple panes running vim, toggle better where to open file?
+	if [ "$active" = "0" ] && [ "$has_vim" = "1" ]; then
+		tmux send-keys -t $pane Escape
+		tmux send-keys -t $pane :tabnew Space $file Enter
+		tmux send-keys -t $pane /"$search_string" Enter
+		tmux send-keys -t $pane :$line Enter zz
+		tmux select-pane -t $pane
+		break
+	fi
 
-  session=`expr $session + 1`
-  set +f; unset IFS
+	session=`expr $session + 1`
+	set +f; unset IFS
 done
